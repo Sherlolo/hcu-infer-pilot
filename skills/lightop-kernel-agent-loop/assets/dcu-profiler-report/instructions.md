@@ -54,7 +54,7 @@ https://developer.sourcefind.cn/gitbook//dcu_developer/DeveloperGuide/dcu_progra
 
 ## 必需产物
 
-产物保存在 LightOp 闭环状态目录或用户指定的证据路径：
+产物保存在用户指定证据位置或被忽略的 LightOp 闭环状态中，留在交付源码 diff 之外。不要向算子树添加 benchmark 结果或 Markdown 报告。复用 benchmark 入口；耗时 profiling/性能任务不在测试 import 或默认 pytest 时运行。以下示例假定所选 benchmark 显式支持其选项：
 
 ```text
 .lightop-kernel-agent/device-bandwidth.txt
@@ -107,8 +107,8 @@ bash <skill-root>/scripts/measure-device-bandwidth.sh \
 mkdir -p .lightop-kernel-agent/profile-artifacts/v000_baseline
 hy-smi 2>&1 | tee .lightop-kernel-agent/profile-artifacts/v000_baseline/device-status.txt || \
   rocm-smi 2>&1 | tee .lightop-kernel-agent/profile-artifacts/v000_baseline/device-status.txt
-HIP_VISIBLE_DEVICES=<idle-card> python test/test_<op>.py 2>&1 | tee .lightop-kernel-agent/profile-artifacts/v000_baseline/benchmark.log
-HIP_VISIBLE_DEVICES=<idle-card> hipprof python test/test_<op>.py 2>&1 | tee .lightop-kernel-agent/profile-artifacts/v000_baseline/hipprof.txt
+HIP_VISIBLE_DEVICES=<idle-card> python test/ci_tests/test_<op>.py --benchmark 2>&1 | tee .lightop-kernel-agent/profile-artifacts/v000_baseline/benchmark.log
+HIP_VISIBLE_DEVICES=<idle-card> hipprof python test/ci_tests/test_<op>.py --benchmark 2>&1 | tee .lightop-kernel-agent/profile-artifacts/v000_baseline/hipprof.txt
 ```
 
 使用 benchmark 脚本时：

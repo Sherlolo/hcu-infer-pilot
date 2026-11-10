@@ -15,7 +15,7 @@ allowed-tools: Bash Read Grep Glob
 适合回答以下问题：
 
 - LightOp 如何暴露和测试相似算子？
-- 新算子应放在哪个 `lightop/csrc/<family>` 中？
+- 新算子应放在哪个 `csrc/<family>` 中？
 - 当前 kernel 由哪张配置表或哪个 dispatcher 分支选择？
 - ROCm/PyTorch/Triton AMD/SGLang/vLLM 是否已经提供相似的 DCU 路径？
 - 下一次修改应依据哪个 DCU profiler 信号？
@@ -57,24 +57,26 @@ allowed-tools: Bash Read Grep Glob
 
 ```text
 setup.py
-lightop/__init__.py
-lightop/csrc/export.cpp
-test/
+python/lightop/__init__.py
+csrc/export.cpp
+test/ci_tests/
 ```
+
+这些路径对应重构后的 checkout；检索前核实所选版本布局。遵循主工作流的可选参数、文件复用、十类 API 和 `test/ci_tests/` 审查规则。提出新 `.cu` 或重复 wrapper 前，先检索已有实现。
 
 先检索以下位置：
 
 ```bash
-rg -n "<op_name>|<binding_name>|<kernel_name>" lightop test setup.py setup_torch29.py
-rg -n "m\.def\(\"<op_name>|<wrapper_name>" lightop/csrc/export.cpp lightop/*.py
-rg -n "get_.*config|gfx|gcnArchName|PYTORCH_ROCM_ARCH" lightop/config*.py setup.py setup_torch29.py
+rg -n "<op_name>|<binding_name>|<kernel_name>" python/lightop csrc test setup.py setup_torch29.py
+rg -n "m\.def\(\"<op_name>|<wrapper_name>" csrc/export.cpp python/lightop
+rg -n "get_.*config|gfx|gcnArchName|PYTORCH_ROCM_ARCH" python/lightop/config*.py setup.py setup_torch29.py
 ```
 
 需要记录的证据：
 
 - Python wrapper 路径和公共 API 导入路径。
 - `export.cpp` 的绑定行。
-- `lightop/csrc/` 下的 kernel 实现文件。
+- `csrc/` 下的 kernel 实现文件。
 - 配置或 dispatcher 分支。
 - 测试与 benchmark 文件。
 - 基线命令及结果。
