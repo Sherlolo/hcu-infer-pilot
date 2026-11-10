@@ -23,6 +23,44 @@
 
 ## Skills 总览
 
+下表汇总当前仓库的 **25 个独立 Skill / 知识入口**，以及安装脚本引用的 **6 个 Humanize 辅助 Skill**。名称链接指向对应使用说明；子模块辅助技能需先初始化 `skills/lightop-skills`。下方保留常用技能的详细说明和提示词示例。
+
+| 类别 | Skill / 入口 | 大概功能 | 主要产物或适用场景 |
+| --- | --- | --- | --- |
+| 模型服务 | [llm-serving-auto-benchmark](skills/llm-serving-auto-benchmark/SKILL.md) | 在相同模型、负载、卡数与 SLA 下比较 SGLang、vLLM、TensorRT-LLM 等框架的部署参数与性能。 | 候选启动命令、参数检查、benchmark 对比及失败记录。 |
+| 模型服务 | [sglang-prod-incident-triage](skills/sglang-prod-incident-triage/SKILL.md) | 按现场采集、请求回放、工具升级的顺序诊断服务异常。 | 健康检查、排队、超时、hang、crash、输出及 PD/EP/HiCache 问题的诊断证据。 |
+| 模型优化 | [sglang-sota-humanize-loop](skills/sglang-sota-humanize-loop/SKILL.md) | 组织公平 benchmark、领先框架 Prof 对比、SGLang patch 与 Humanize/RLCR 模型级迭代。 | 一个模型的性能差距、修复与复测闭环；需要实际运行环境。 |
+| Prof 分析 | [llm-torch-profiler-analysis](skills/llm-torch-profiler-analysis/SKILL.md) | 分析已有 torch.profiler trace，或驱动在线服务分阶段采集。 | kernel、overlap、fusion、空泡和源码关联报告；支持 SGLang、vLLM、TensorRT-LLM 的相应采集条件。 |
+| 模型理解 | [model-architecture-diagram](skills/model-architecture-diagram/SKILL.md) | 查询 LLM、VLM、MoE 等模型的公开原始架构图。 | 图片 Markdown、来源；无匹配时返回 `no_match`。 |
+| 模型仿真 | [model-compute-simulation](skills/model-compute-simulation/SKILL.md) | 按模型配置和并行/输入形状展开算子计算模板，估算 FLOPs、tensor shape，并结合实测延迟估计 MFU。 | 算子计算量与并行方案比较；不代替真实性能测量。 |
+| 量化 | [one-click-quant](skills/one-click-quant/SKILL.md) | 指导 one-click-quant 工程的量化、预处理、新模型 recipe、scheme/template 扩展与精度排查。 | 量化运行方案、适配方法、PPL/lm_eval 精度诊断。 |
+| PR 分析 | [vllm-pr-summary](skills/vllm-pr-summary/SKILL.md) | 读取 vLLM PR 的描述、diff、讨论和 review，解释实现及风险。 | 含 Mermaid 图的中文 PR 总结报告。 |
+| 历史知识 | [model-pr-optimization-history](model-pr-optimization-history/SKILL.md) | 检索开源社区中的模型及框架级优化 PR 历史。 | fast path、fusion、overlap、attention、MoE、cache 等改动出处与回归提示。 |
+| 历史知识 | [model-pr-optimization-hg-history](model-pr-optimization-hg-history/SKILL.md) | 检索本地 SGLang/vLLM fork 的优化提交，与社区 PR 证据互补。 | 本地实现路径、提交和适用条件；SGLang 历史按 local-only 规则维护。 |
+| 知识管理 | [kb-search](skills/kb-search/SKILL.md) | 在本地 fork 历史、社区 PR 历史、HCU 知识库及现有 Skill 之间路由查询。 | 可打开的资料出处、历史记录或技能入口。 |
+| 知识管理 | [kb-ingest](skills/kb-ingest/SKILL.md) | 判断资料应进入 HCU 知识库、历史更新流程还是本仓可复用 Skill。 | 分类结果与对应入库流程，避免直接改写受保护内容。 |
+| 知识管理 | [kb-update](skills/kb-update/SKILL.md) | 按各自规则更新 fork 提交历史、社区 PR 历史及 HCU 知识库的 SGLang PR 同步。 | 增量更新、校验和待审变更；发布与合并遵从该技能的授权规则。 |
+| GEMM 调优 | [gemm-tuning](skills/gemm-tuning/SKILL.md) | 从 SGLang/vLLM 日志提取 hipBLASLt/rocBLAS shape，生成 tuning 输入并验证模型端命中。 | 调优输入、配置、运行时命中证据和中文报告。 |
+| GEMM 调优 | [hipblaslt-rocblas-tuning](skills/hipblaslt-rocblas-tuning/SKILL.md) | 抓取真实 GEMM，按 token M 幂次点调优并用最近兼容点补齐整数尺寸。 | hipBLASLt override / NMZ rocBLAS native 配置、来源映射和单算子精度/性能验证。 |
+| MoE 调优 | [hcu-aiter-moe-tuning](skills/hcu-aiter-moe-tuning/SKILL.md) | 从真实模型与 TP/EP 配置收集 AITER ASM fused-MoE shape，调优并校验配置表。 | gfx/量化相关的 CSV、覆盖检查、数值与服务验证。 |
+| LightOp | [lightop-kernel-knowledge](skills/lightop-kernel-knowledge/SKILL.md) | 优先检查本地 LightOp 实现，再检索 ROCm/HIP/库及框架证据。 | 实现、测试、dispatch、配置和跨平台迁移依据。 |
+| LightOp | [lightop-kernel-agent-loop](skills/lightop-kernel-agent-loop/SKILL.md) | 依据 HIP 性能证据新增或优化 LightOp 算子，完成构建、正确性、计时、ISA 与消融归因。 | 可复现、可回退的算子实现和验证记录；本仓独立入口直接驱动证据闭环。 |
+| DCU Prof | [dcu-profiler-report](skills/dcu-profiler-report/SKILL.md) | 从 hipprof 入手，必要时深入 counters、ROCm/DTK profiler 与 ISA，解释 kernel 瓶颈。 | API/kernel/memory 证据和下一步具体算子修改建议。 |
+| 模型/Kernel 诊断 | [kernel-model-triage](skills/kernel-model-triage/SKILL.md) | 对 HCU 训练/推理任务进行模型到 kernel 的跨层测试、性能及精度问题定位。 | 可比基线、OOM/编译/多卡问题诊断、回归与优化验收方案。 |
+| HIP 基线 | [kernel-hip-baseline](skills/kernel-hip-baseline/SKILL.md) | 将 Torch、Triton、Python 或 CUDA/C++ 参考实现转换为 HCU HIP/C++ baseline。 | 可编译 `kernel.hip` 与正确性 harness，作为后续优化起点。 |
+| HIP 优化 | [kernel-hip-optimize](skills/kernel-hip-optimize/SKILL.md) | 通过 hipprof、roofline、ISA、分支探索及消融归因迭代优化 HIP/CK Tile kernel。 | 固定 shape 的候选、正确性、性能与经验记录。 |
+| HIP 方法 | [kernel-hip-handbook](skills/kernel-hip-handbook/SKILL.md) | 提供 BW 系列 HCU 的指令、LDS、寄存器、occupancy、roofline 和 shape 特化方法。 | 深度分析与优化参考，按实际架构和测量选用。 |
+| Triton 基线 | [kernel-triton-baseline](skills/kernel-triton-baseline/SKILL.md) | 从参考实现与 shape 生成正确性优先、benchmark 兼容的 Triton baseline case。 | `kernel.py`、`ref.py`、manifest 和基线验证；复杂算子需要专门实现。 |
+| Triton 优化 | [kernel-triton-optimize](skills/kernel-triton-optimize/SKILL.md) | 联合固定配置计时、profiling、KB、Triton IR/cache、ISA 和消融进行迭代优化。 | 多架构 HCU Triton kernel 的候选对照与归因报告。 |
+| 辅助研究（子模块） | [ask-codex](skills/lightop-skills) | 通过 Humanize 运行时调用 Codex 辅助研究或复核。 | 辅助意见；依赖对应工具和运行时配置。 |
+| 辅助研究（子模块） | [ask-gemini](skills/lightop-skills) | 通过 Humanize 运行时调用 Gemini 辅助研究。 | 辅助意见；依赖对应工具和运行时配置。 |
+| 协作流程（子模块） | [humanize](skills/lightop-skills) | 提供 Humanize 协作与迭代工作流入口。 | 配合计划、实施和复核使用的运行时流程。 |
+| 计划（子模块） | [humanize-gen-plan](skills/lightop-skills) | 为任务生成实施计划。 | 可供后续细化和执行的计划。 |
+| 计划（子模块） | [humanize-refine-plan](skills/lightop-skills) | 复核并细化已有计划。 | 修订后的步骤、约束和验证安排。 |
+| 迭代复核（子模块） | [humanize-rlcr](skills/lightop-skills) | 组织 Humanize/RLCR 实施与复核循环。 | 有检查和停止规则的迭代记录。 |
+
+**安装覆盖说明：** 当前 `install_all_skills.sh` 注册了 23 个安装项，并不自动安装表中所有独立目录。`gemm-tuning`、`one-click-quant` 及六个 `kernel-*` 入口可按“方式二”单独安装。本仓已有独立版本的 `lightop-kernel-knowledge`、`lightop-kernel-agent-loop` 和 `dcu-profiler-report`，但一键安装器目前仍从 `lightop-skills` 子模块或其 Humanize 运行时取对应内容；使用时核对实际安装来源，不能将它们视为同一版本。两个历史知识目录的 frontmatter 均使用 `model-pr-history-knowledge`，引用时同时说明目录，以免混淆社区 PR 与本地 fork 历史。
+
 ### 1. `llm-serving-auto-benchmark`
 
 作用：跨框架 LLM Serving benchmark。适合比较 SGLang、vLLM、TensorRT-LLM 或其他 serving 框架在同一模型、同一 workload、同一 GPU 预算下的表现。
@@ -342,6 +380,9 @@ git submodule update --init --recursive
 - `model-pr-optimization-hg-history`
 - `lightop-kernel-knowledge`
 - `hcu-aiter-moe-tuning`
+- `kb-update`
+- `kb-ingest`
+- `kb-search`
 - `hipblaslt-rocblas-tuning`
 - `ask-codex`
 - `ask-gemini`
