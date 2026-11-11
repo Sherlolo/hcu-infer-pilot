@@ -1,6 +1,6 @@
-# DCU-Infer-Pilot
+# HCU-Infer-Pilot
 
-`DCU-Infer-Pilot` 是一套面向 LLM Serving、性能分析、线上故障排查、模型优化历史检索和 DCU/ROCm kernel 经验沉淀的 Codex Skills 仓库。它把常见的 AI Infra 工作流拆成可复用的 skill、知识库和辅助脚本，方便你在同一个仓库里完成 benchmark、profiling、PR 分析、历史查询和优化闭环。
+`HCU-Infer-Pilot` 是一套面向 LLM Serving、性能分析、线上故障排查、模型优化历史检索和 DCU/ROCm kernel 经验沉淀的 Codex Skills 仓库。它把常见的 AI Infra 工作流拆成可复用的 skill、知识库和辅助脚本，方便你在同一个仓库里完成 benchmark、profiling、PR 分析、历史查询和优化闭环。
 
 这个仓库适合下面几类工作：
 
